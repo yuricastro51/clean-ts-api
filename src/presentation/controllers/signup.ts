@@ -4,9 +4,13 @@ import { HttpRequest, HttpResponse } from '../protocols/http';
 import { Controller } from '../protocols/controller';
 import { EmailValidator } from '../protocols/emailValidator';
 import { InvalidParamError } from '../errors/invalidParamError';
+import { AddAccount } from '../../domain/usecases/addAccount';
 
 export class SignUpController implements Controller {
-  constructor (private readonly emailValidator: EmailValidator) {}
+  constructor (
+    private readonly emailValidator: EmailValidator,
+    private readonly addAccount: AddAccount
+  ) {}
 
   handle (httpRequest: HttpRequest): HttpResponse {
     try {
@@ -18,7 +22,7 @@ export class SignUpController implements Controller {
         }
       }
 
-      const { email, password, passwordConfirmation } = httpRequest.body;
+      const { email, password, passwordConfirmation, name } = httpRequest.body;
 
       if (password !== passwordConfirmation) {
         return badRequest(new InvalidParamError('passwordConfirmation'));
@@ -30,9 +34,11 @@ export class SignUpController implements Controller {
         return badRequest(new InvalidParamError('email'));
       }
 
+      const account = this.addAccount.add({ name, password, email });
+
       return {
         statusCode: 200,
-        body: ''
+        body: account
       };
     } catch (error) {
       return serverError();
