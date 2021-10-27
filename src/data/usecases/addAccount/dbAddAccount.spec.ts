@@ -1,6 +1,23 @@
-import { AddAccount } from '../../../domain/usecases/addAccount';
+import { AccountModel } from '../../../domain/models/account';
+import { AddAccount, AddAccountModel } from '../../../domain/usecases/addAccount';
 import { DbAddAccount } from './dbAddAccount';
+import { AddAccountRepository } from './protocols/addAccountRepository';
 import { Encrypter } from './protocols/encrypter';
+
+const makeAddAccountRepository = (): any => {
+  class AddAccountRepository implements AddAccountRepository {
+    async add (accountData: AddAccountModel): Promise<AccountModel> {
+      const fakeAccountModel = {
+        id: 'any_id',
+        name: 'any_name',
+        password: 'any_password',
+        email: 'any_email@mail.com'
+      };
+      return fakeAccountModel;
+    }
+  }
+  return new AddAccountRepository();
+};
 
 const makeEncrypter = (): Encrypter => {
   class EncrypterStub implements Encrypter {
@@ -14,13 +31,15 @@ const makeEncrypter = (): Encrypter => {
 interface SutTypes {
   sut: AddAccount
   encrypterStub: Encrypter
+  addAccountRepositoryStub: AddAccountRepository
 }
 
 const makeSut = (): SutTypes => {
   const encrypterStub = makeEncrypter();
-  const sut = new DbAddAccount(encrypterStub);
+  const addAccountRepositoryStub = makeAddAccountRepository();
+  const sut = new DbAddAccount(encrypterStub, addAccountRepositoryStub);
 
-  return { sut, encrypterStub };
+  return { sut, encrypterStub, addAccountRepositoryStub };
 };
 
 describe('DbAddAccount Usecase', () => {
@@ -49,5 +68,21 @@ describe('DbAddAccount Usecase', () => {
 
     const promise = sut.add(accountData);
     await expect(promise).rejects.toThrow();
+  });
+
+  test('Should call AddAccountRepository with correct values', async () => {
+    const { sut, addAccountRepositoryStub } = makeSut();
+    const addSpy = jest.spyOn(addAccountRepositoryStub, 'add');
+    const accountData = {
+      name: 'valid_name',
+      email: 'valid_email@mail.com',
+      password: 'valid_password'
+    };
+    await sut.add(accountData);
+    expect(addSpy).toHaveBeenCalledWith({
+      name: 'valid_name',
+      email: 'valid_email@mail.com',
+      password: 'hashed_password'
+    });
   });
 });
