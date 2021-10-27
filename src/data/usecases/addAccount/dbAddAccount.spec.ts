@@ -2,11 +2,14 @@ import { AddAccount } from '../../../domain/usecases/addAccount';
 import { DbAddAccount } from './dbAddAccount';
 import { Encrypter } from './protocols/encrypter';
 
-class EncrypterStub implements Encrypter {
-  async encrypt (value: string): Promise<string> {
-    return 'hashed_password';
+const makeEncrypter = (): Encrypter => {
+  class EncrypterStub implements Encrypter {
+    async encrypt (value: string): Promise<string> {
+      return 'hashed_password';
+    }
   }
-}
+  return new EncrypterStub();
+};
 
 interface SutTypes {
   sut: AddAccount
@@ -14,7 +17,7 @@ interface SutTypes {
 }
 
 const makeSut = (): SutTypes => {
-  const encrypterStub = new EncrypterStub();
+  const encrypterStub = makeEncrypter();
   const sut = new DbAddAccount(encrypterStub);
 
   return { sut, encrypterStub };
