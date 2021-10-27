@@ -1,5 +1,5 @@
 import { AddAccount, AddAccountModel } from '../../domain/usecases/addAccount';
-import { AccountModel } from '../../domain/usecases/models/account';
+import { AccountModel } from '../../domain/models/account';
 import { InvalidParamError } from '../errors/invalidParamError';
 import { MissingParamError } from '../errors/missingParamError';
 import { ServerError } from '../errors/serverError';
