@@ -1,5 +1,6 @@
 import { MongoHelper } from '../helpers/mongoHelper';
 import { AccountMongoRepository } from './account';
+import fs from 'fs/promises';
 
 const makeSut = (): AccountMongoRepository => {
   return new AccountMongoRepository();
@@ -12,6 +13,7 @@ describe('Account Mongo Repository', () => {
 
   afterAll(async () => {
     await MongoHelper.diconnect();
+    await fs.unlink(process.cwd() + '/globalConfig.json');
   });
 
   beforeEach(async () => {
