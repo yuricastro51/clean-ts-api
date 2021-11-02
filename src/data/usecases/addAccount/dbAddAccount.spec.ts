@@ -1,8 +1,8 @@
 import { AccountModel } from '../../../domain/models/account';
 import { AddAccount, AddAccountModel } from '../../../domain/usecases/addAccount';
 import { DbAddAccount } from './dbAddAccount';
-import { AddAccountRepository } from './protocols/addAccountRepository';
-import { Encrypter } from './protocols/encrypter';
+import { AddAccountRepository } from '../../protocols/addAccountRepository';
+import { Encrypter } from '../../protocols/encrypter';
 
 const makeAddAccountRepository = (): any => {
   class AddAccountRepository implements AddAccountRepository {

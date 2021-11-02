@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt';
-import { Encrypter } from '../../data/usecases/addAccount/protocols/encrypter';
+import { Encrypter } from '../../data/protocols/encrypter';
 import { BcryptAdapter } from './bcryptAdapter';
 
 interface SutTypes {
